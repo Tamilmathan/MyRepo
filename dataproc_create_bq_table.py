@@ -35,3 +35,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+   # test_table_ref = f"{GCP_PROJECT}.{DATASET_ID}.{TABLE_ID}"
