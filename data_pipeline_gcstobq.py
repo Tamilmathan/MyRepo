@@ -1,6 +1,7 @@
 
 from datetime import datetime, timedelta
 from airflow import DAG
+from airflow.operators.empty import EmptyOperator
 from airflow.providers.google.cloud.transfers.gcs_to_bigquery import GCSToBigQueryOperator
 from airflow.providers.google.cloud.operators.bigquery import BigQueryCreateTableOperator
 
@@ -29,14 +30,19 @@ with DAG(
     catchup=False,
 ) as dag:
     # Task to create the BigQuery table if it does not exist (optional but good practice)
-   # create_table = BigQueryCreateTableOperator(
-       # task_id="start_Job",
-       # project_id='myfirstcloudproject-487412',
-       # dataset_id='rawdataprocess',
-       # table_id='employee',
-       # table_resource=None,
-       # gcp_conn_id='google_cloud_default', # Connection ID configured in Airflow
-    # )
+    # create_table = BigQueryCreateTableOperator(
+    #    task_id="start_Job"
+    #    project_id='myfirstcloudproject-487412',
+    #    dataset_id='rawdataprocess',
+    #    table_id='employee',
+    #    table_resource=None,
+    #    gcp_conn_id='google_cloud_default' # Connection ID configured in Airflow
+   # )
+
+    start_task = EmptyOperator(
+        task_id='start',
+        dag=dag,
+    )
 
     # Task to load data from GCS to BigQuery
     load_data = GCSToBigQueryOperator(
@@ -63,4 +69,4 @@ with DAG(
     )
 
     # Define task dependencies
-    load_data
+    create_table >> load_data
