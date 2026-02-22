@@ -1,9 +1,12 @@
 
 from datetime import datetime, timedelta
 from airflow import DAG
-from airflow.operators.empty import EmptyOperator
-from airflow.providers.google.cloud.transfers.gcs_to_bigquery import GCSToBigQueryOperator
-from airflow.providers.google.cloud.operators.bigquery import BigQueryCreateTableOperator
+from airflow.providers.standard.operators.empty import EmptyOperator
+from airflow.providers.google.cloud.operators.bigquery import (
+    BigQueryCreateEmptyTableOperator,
+    BigQueryDeleteDatasetOperator,
+)
+from airflow.providers.google.cloud.operators.bigquery import GCSToBigQueryOperator
 
 # Define default arguments
 default_args = {
@@ -69,4 +72,4 @@ with DAG(
     )
 
     # Define task dependencies
-    create_table >> load_data
+    start_task >> load_data
