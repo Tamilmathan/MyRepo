@@ -1,12 +1,10 @@
 
 from datetime import datetime, timedelta
 from airflow import DAG
-from airflow.providers.standard.operators.empty import EmptyOperator
-from airflow.providers.google.cloud.operators.bigquery import (
-    BigQueryCreateEmptyTableOperator,
-    BigQueryDeleteDatasetOperator,
-)
-from airflow.providers.google.cloud.operators.bigquery import GCSToBigQueryOperator
+from airflow.operators.empty import EmptyOperator
+from airflow.providers.google.cloud.transfers.gcs_to_bigquery import GCSToBigQueryOperator
+from airflow.providers.google.cloud.operators.bigquery import BigQueryCreateTableOperator
+
 
 # Define default arguments
 default_args = {
@@ -33,15 +31,16 @@ with DAG(
     catchup=False,
 ) as dag:
     # Task to create the BigQuery table if it does not exist (optional but good practice)
-    # create_table = BigQueryCreateTableOperator(
-    #    task_id="start_Job"
-    #    project_id='myfirstcloudproject-487412',
-    #    dataset_id='rawdataprocess',
-    #    table_id='employee',
-    #    table_resource=None,
-    #    gcp_conn_id='google_cloud_default' # Connection ID configured in Airflow
-   # )
+   # create_table = BigQueryCreateTableOperator(
+       # task_id="start_Job",
+       # project_id='myfirstcloudproject-487412',
+       # dataset_id='rawdataprocess',
+       # table_id='employee',
+       # table_resource=None,
+       # gcp_conn_id='google_cloud_default', # Connection ID configured in Airflow
+    # )
 
+    # Task to start GCS to BigQuery
     start_task = EmptyOperator(
         task_id='start',
         dag=dag,
